@@ -1,54 +1,67 @@
-# Astro Starter Kit: Basics
+# cute aggression
+
+Astro static site. Deployed to Uberspace automatically on every push to `main`.
+
+## Updating the site
+
+Everything you'd normally want to change lives in `src/data/*.yaml`. Edit those on
+github.com (pencil icon → commit), and the site rebuilds and goes live in about a minute.
+No terminal needed.
+
+| File                     | What it is                                               |
+| ------------------------ | -------------------------------------------------------- |
+| `src/data/news.yaml`     | gigs and release announcements, newest sorts first        |
+| `src/data/releases.yaml` | music, rendered as Spotify/Bandcamp players               |
+| `src/data/videos.yaml`   | music videos, just paste the YouTube link                 |
+| `src/data/links.yaml`    | social links — shown on `/` and on the linktree `/links`  |
+
+Each file has a comment at the top showing the format. Two rules that bite:
+
+- every entry needs a **unique `id`**, otherwise entries silently overwrite each other
+- dates are `YYYY-MM-DD`. `dateLabel:` overrides what's _displayed_ if you want a joke there
+
+If you get the format wrong the deploy fails loudly instead of publishing a broken page —
+check the Actions tab for what it didn't like.
+
+The bio text is in `src/pages/index.astro`.
+
+## Linktree
+
+`/links` is the single-link page for instagram bios. It's generated from `links.yaml`
+(`featured: true` = big button) and automatically puts the newest entry from
+`releases.yaml` at the top.
+
+## Local development
 
 ```sh
-npm create astro@latest -- --template basics
+pnpm install
+pnpm dev       # localhost:4321
+pnpm build     # typecheck + build into dist/
+pnpm test      # checks the spotify/youtube/bandcamp link parsing
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## Deployment
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+`.github/workflows/deploy.yml` builds on push to `main` and rsyncs `dist/` to
+`/var/www/virtual/$SSH_USER/html/` on Uberspace. `dist/` is not in git.
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+Required repository secrets (Settings → Secrets and variables → Actions):
 
-## 🚀 Project Structure
+| Secret            | How to get it                                      |
+| ----------------- | -------------------------------------------------- |
+| `SSH_HOST`        | your uberspace host, e.g. `andromeda.uberspace.de` |
+| `SSH_USER`        | your uberspace username                            |
+| `SSH_KEY`         | private half of a deploy-only keypair (see below)  |
+| `SSH_KNOWN_HOSTS` | output of `ssh-keyscan <SSH_HOST>`                 |
 
-Inside of your Astro project, you'll see the following folders and files:
+One-time key setup, run locally:
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/cuteaggression_deploy -C "github-actions deploy"
+ssh-copy-id -i ~/.ssh/cuteaggression_deploy.pub <user>@<host>
+ssh-keyscan <host>                        # -> SSH_KNOWN_HOSTS
+cat ~/.ssh/cuteaggression_deploy          # -> SSH_KEY, the whole thing incl. BEGIN/END lines
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The rsync runs with `--delete`: anything in `html/` that isn't in `dist/` gets removed.
+Check what's in there before the first deploy.

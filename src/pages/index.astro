@@ -1,391 +1,189 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import { spotifyEmbed, youtubeEmbed, bandcampEmbed } from '../lib/embed.ts';
+
+const byNewest = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
+	b.data.date.valueOf() - a.data.date.valueOf();
+
+const links = (await getCollection('links')).sort((a, b) => a.data.order - b.data.order);
+const news = (await getCollection('news')).sort(byNewest);
+const releases = (await getCollection('releases')).sort(byNewest);
+const videos = (await getCollection('videos')).sort(byNewest);
+
+const fmt = new Intl.DateTimeFormat('de-AT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+const label: Record<string, string> = {
+	concert: 'concert',
+	single: 'new single',
+	album: 'new album',
+	video: 'new video',
+	press: 'press',
+	charts: 'charts',
+};
 ---
 
 <Layout>
-    <main>
-        <h1>cute aggression</h1>
+	<main>
+		<h1>cute aggression</h1>
 
-        <div class="social-links">
-            <a target="_blank" href="https://www.instagram.com/cute_aggression_music">instagram</a>
-            <a target="_blank" href="https://open.spotify.com/intl-de/artist/3rbniHDRignIfH40jqg491?si=cB7LG9TxQji6dLBH5KqrDw">spotify</a>
-            <a target="_blank" href="https://cuteaggressionmusic.bandcamp.com">bandcamp</a>
-            <a target="_blank" href="https://drive.google.com/drive/folders/1GwIzbjxxkbSLlQfv0d8AmRoVmMlS_AN2?usp=sharing">press</a>
-            <a target="_blank" href="mailto:erika.schweighofer@gmail.com">contact</a>
-        </div>
+		<div class="social-links">
+			{links.map((link) => <a href={link.data.url}>{link.data.text}</a>)}
+			<a href="/links">links</a>
+		</div>
 
-        <div class="bio">
-            <p>cute aggression make music. music that you like. or don’t. to cute aggression that doesn’t matter. come by when cute aggression play a concert. they play synthesizers and drum machines and guitars and stuff. or maybe they don’t. maybe they just play with your expectations.</p>
-            <p>currently recording our first album.</p>
-            <p><b>XOXO</b></p>
-        </div>
+		<div class="bio">
+			<p>
+				cute aggression make music. music that you like. or don’t. to cute aggression that
+				doesn’t matter. come by when cute aggression play a concert. they play synthesizers
+				and drum machines and guitars and stuff. or maybe they don’t. maybe they just play
+				with your expectations.
+			</p>
+			<p>our debut album <b>make us crash</b> is out now.</p>
+			<p>currently recording our first ep. out this fall.</p>
+			<p><b>XOXO</b></p>
+		</div>
 
-        <h2>news</h2>
-        <div class="news-container">
-            <div class="news-item single">
-                <p>25.11.2025</p>
-                <h3><b>concert: </b>Arena Wien, DUBINSKI support</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">click me baby</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>15.11.2025</p>
-                <h3><b>concert: </b>megaworld.xyz: MEGAminiWORLD.XYZ</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">hello here is the link to click</a>
-                </div>
-            </div>
-            <div class="news-item single">
-                <p>02.11.2025</p>
-                <h3><b>concert: </b>Flucc, Sonntagsdisco</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">pls</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>18.10.2025</p>
-                <h3><b>concert: </b>Spektakel, Sternatelier Festival</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">KLCIK KLICK KLICK</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>04.10.2025</p>
-                <h3><b>concert: </b>PMK IBK, (Erika spielte Solo)</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">arghhalkjdshfglkj</a>
-                </div>
-            </div>
-            <div class="news-item single">
-                <p>25.07.2025</p>
-                <h3><b>new single: </b>Charli's Butt</h3>
-                <div>
-                    <a href="https://open.spotify.com/intl-de/track/12YdT889x0AIBx4TFfe6El?si=5d580128c64c406d">listen listen</a>
-                </div>
-            </div>
-            <div class="news-item single">
-                <p>25.07.2025</p>
-                <h3><b>concert: </b>Popfest Wien (im Prechtlsaal xoxo)</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">CLICK HEREEEEE</a>
-                </div>
-            </div>
-            <div class="news-item single">
-                <p>24.06.2025</p>
-                <h3><b>concert: </b>kramladen wien, with Lillie Creatures</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">click me baby</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>a long long time ago</p>
-                <h3><b>concert: </b>sargfabrik wien, GARDENS album release support</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">don't clikc pls no</a>
-                </div>
-            </div>
-            <div class="news-item single">
-                <p>27.09.2024</p>
-                <h3><b>concert: </b>b72 wien, ischia album release support</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">click clack click</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>13.09.2024</p>
-                <h3><b>concert: </b>kramladen wien, halal hardcore album release support</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">this is the link to the concert</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>04.07.2024</p>
-                <h3><b>concert: </b>Kultursommer Stadt Wien</h3>
-                <div>
-                    <a href="https://kultursommer.wien/act/?id=336601-aaronerika3&lang=de">look mom</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>08.12.2023</p>
-                <h3><b>concert: </b>extremely secret gig</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">dont click here</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>30.03.2024</p>
-                <h3><b>concert: </b>ostern in der mühle</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">it was fun, see</a>
-                </div>
-            </div>
-            <div class="news-item single">
-                <p>14.02.2024</p>
-                <h3><b>new single: </b>Talking About Music</h3>
-                <div>
-                    <a href="https://aaronerika.bandcamp.com/track/talking-about-music">listen listen listen :-O</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>19.01.2024</p>
-                <h3><b>concert: </b>rundgang der akademie der bildenden künste</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">dont click here</a>
-                </div>
-            </div>
-            <div class="news-item">
-                <p>08.12.2023</p>
-                <h3><b>concert: </b>extremely secret gig</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">dont click here</a>
-                </div>
-            </div>
+		{
+			releases.length > 0 && (
+				<>
+					<h2>listen</h2>
+					<div class="stack">
+						{releases.map(({ data }) => {
+							const spotify = spotifyEmbed(data.spotify);
+							const bandcamp = bandcampEmbed(data.bandcampId);
+							return (
+								<div class="card release">
+									<h3>{data.title}</h3>
+									{spotify && (
+										<iframe
+											src={spotify}
+											height={data.kind === 'album' ? 352 : 152}
+											loading="lazy"
+											title={data.title}
+											allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"
+										/>
+									)}
+									{bandcamp && (
+										<iframe src={bandcamp} height="120" loading="lazy" title={data.title} seamless />
+									)}
+									<div>
+										{data.bandcampUrl && <a href={data.bandcampUrl}>bandcamp</a>}
+										{data.links.map((l) => (
+											<a href={l.url}>{l.text}</a>
+										))}
+									</div>
+								</div>
+							);
+						})}
+					</div>
+				</>
+			)
+		}
 
-            <div class="news-item single">
-                <p>24.11.2023</p>
-                <h3><b>new single: </b> Bad Feminist</h3>
-                <div>
-                    <a href="https://distrokid.com/hyperfollow/aaronerika3/bad-feminist"> presave </a>
-                    <a href=""> listen</a>
-                </div>
-            </div>
+		{
+			videos.length > 0 && (
+				<>
+					<h2>watch</h2>
+					<div class="stack">
+						{videos.map(({ data }) => (
+							<div class="card video">
+								<h3>{data.title}</h3>
+								<div class="video-frame">
+									<iframe
+										src={youtubeEmbed(data.youtube) ?? data.youtube}
+										loading="lazy"
+										title={data.title}
+										allow="accelerometer; encrypted-media; picture-in-picture; web-share"
+										allowfullscreen
+									/>
+								</div>
+							</div>
+						))}
+					</div>
+				</>
+			)
+		}
 
-            <div class="news-item">
-                <p>22.11.2023</p>
-                <h3><b>concert: </b>tunnel vienna</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">click here to earn free coins</a>
-                </div>
-            </div>
-
-            <div class="news-item">
-                <p>08.10.2023</p>
-                <h3><b>concert: </b>ministry of artists vienna</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">spicy pics</a>
-                </div>
-            </div>
-
-            <div class="news-item">
-                <p>26.05.2023</p>
-                <h3><b>concert: </b>secret gig baby</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx">download now</a>
-                </div>
-            </div>
-
-            <div class="news-item">
-                <p>14.1.2023</p>
-                <h3><b>concert: </b>toytopia vienna</h3>
-                <div>
-                    <a href="https://">instagram</a>
-                </div>
-            </div>
-
-            <div class="news-item">
-                <p>20.12.2022</p>
-                <h3><b>concert: </b>p.m.k. innsbruck</h3>
-                <div>
-                    <a href="https://www.instagram.com/xx_aaron_erika_xx"> event</a>
-                </div>
-            </div>
-        </div>
-        <footer>
-            website by aaron abebe
-        </footer>
-    </main>
+		<h2>news</h2>
+		<div class="stack">
+			{
+				news.map(({ data }) => (
+					<div class:list={['card', 'news-item', { single: data.kind !== 'concert' }]}>
+						<p>{data.dateLabel ?? fmt.format(data.date)}</p>
+						<h3>
+							<b>{label[data.kind]}: </b>
+							{data.title}
+						</h3>
+						<div>
+							{data.links.map((l) => (
+								<a href={l.url}>{l.text}</a>
+							))}
+						</div>
+					</div>
+				))
+			}
+		</div>
+		<footer>website by aaron abebe</footer>
+	</main>
 </Layout>
-<script is:inline>
-document.addEventListener('DOMContentLoaded', function() {
-  const links = document.querySelectorAll('a');
-  
-  links.forEach(link => {
-    link.addEventListener('click', function(event) {
-      event.preventDefault();
-      
-      const backgroundImage = '/fireskull.gif';
-      
-      document.documentElement.style.background = `url('${backgroundImage}')`;
-      document.documentElement.style.filter = "hue-rotate(90deg)";
-      
-      const href = this.href;
-      setTimeout(function() {
-        window.open(href, '_blank');
-      }, 800);;
-    })
-  });
-});
-
-</script>
 
 <style>
+	.bio {
+		background: var(--primary);
+	}
 
-    :root {
-        --primary: #f0f;
-        --secondary: #000;
-        --tertiary: #0ff;
-    }
-    main {
-        margin: auto;
-        padding: 10px;
-        width: 90%;
-        height: 100vh;
-        max-width: calc(100% - 2rem);
-        font-size: 17px;
-        line-height: 1.6;
-        scrollbar-color: var(--primary) var(--secondary);
-        overflow-y: scroll;
-    }
+	.stack {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 
-    footer {
-        font-size: 0.8rem;
-        font-weight: 300;
-        text-align: center;
-        margin-bottom: 30px;
-        padding: 10px;
-        background: var(--tertiary);
-    }
+	.card {
+		padding-top: 1rem;
+		padding-bottom: 10px;
+		width: 100%;
+		text-align: center;
+		background: var(--primary);
+	}
 
-    .social-links {
-        display: flex;
-        background: var(--primary);
-        justify-content: space-evenly;
-        flex-direction:column;
-        padding: 10px;
-    }
+	.news-item {
+		border-bottom: 2px dashed;
+	}
 
-    h1 {
-        font-size: 2rem;
-        font-weight: 300;
-        background: var(--primary);
-        color: var(--secondary);
-        padding: 10px;
-        /* text-align: center; */
-        font-style: italic;
-        margin: 0;
-    }
+	.single {
+		background: var(--tertiary);
+	}
 
-    h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        text-decoration: underline;
-        width: fit-content;
-        background: var(--primary);
-    }
+	.release,
+	.video {
+		background: var(--tertiary);
+		border-bottom: 2px dashed;
+	}
 
-    .bio {
-        background: var(--primary);
-    }
+	iframe {
+		border: 0;
+		width: 100%;
+		display: block;
+		margin-bottom: 10px;
+	}
 
-    .news-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+	/* keeps youtube 16:9 without javascript */
+	.video-frame {
+		aspect-ratio: 16 / 9;
+	}
 
-    .news-item {
-        padding-top: 1rem;
-        border-bottom: 2px dashed;
-        width: 100%;
-        padding-bottom: 10px;
-        text-align: center;
-        background: var(--primary);
-    }
+	.video-frame iframe {
+		height: 100%;
+	}
 
-    .single {
-        background: var(--tertiary);
-    }
+	@media screen and (min-width: 600px) {
+		.card {
+			width: 60%;
+		}
 
-    p {
-        margin: 0;
-        padding: 10px;
-    }
-
-    h3 {
-        font-size: 1.5rem;
-        font-style: italic;
-        font-weight: 500;
-    }
-
-    a {
-        font-size: 1rem;
-        font-weight: 500;
-        border: 2px solid;
-        padding: 10px;
-        color: var(--secondary);
-        background: var(--tertiary);
-        margin-right: 15px;
-        display: inline-block;
-    }
-
-    a:hover {
-        color: var(--tertiary);
-        background: var(--primary);
-        cursor: pointer;
-        transform: scale(1.2);
-    }
-
-    summary {
-        font-size: 2rem;
-        font-weight: 100;
-    }
-
-
-    /* scrollbar */
-    ::-webkit-scrollbar {
-        width: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #888;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
-
-    @media screen and (min-width: 600px) {
-        main {
-            width: 50%;
-            padding: 1rem;
-        }
-
-        .social-links {
-            flex-direction: row;
-        }
-
-        h1 {
-            font-size: 4rem;
-        }
-
-        h2 {
-            font-size: 3rem;
-        }
-
-        h3 {
-            font-size: 2rem;
-        }
-
-        .news-item {
-            width: 60%;
-        }
-
-        .news-container {
-            width: 100%;
-        }
-
-        a {
-            font-size: 1rem;
-        }
-
-        summary {
-            font-size: 1rem;
-        }
-    }
-
+		.stack {
+			width: 100%;
+		}
+	}
 </style>

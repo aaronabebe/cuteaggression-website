@@ -1,0 +1,281 @@
+# News feed. Newest first is automatic — order in this file does not matter.
+#
+# To add an entry, copy a block and change it:
+#
+#   - id: 2026-01-31-some-venue      <- must be unique. date + short name works.
+#     date: 2026-01-31               <- YYYY-MM-DD, used for sorting
+#     kind: concert                  <- concert | single | album | video
+#     title: "venue, whatever else"
+#     links:
+#       - text: "click me baby"
+#         url: https://...
+#
+# Optional: dateLabel: "a long long time ago"  -> shown instead of the date.
+# Optional: leave out `links:` entirely if there is nothing to link to.
+
+- id: 2026-08-04-charts
+  date: 2026-08-04
+  kind: charts
+  title: "3rd week in the charts with Talking About Music (Remix) feat. Nenda"
+  links:
+    - text: "listen listen"
+      url: https://open.spotify.com/album/3Whe5H1Wpm6Z46U2DEPgP8
+
+- id: 2026-07-10-talking-about-music-remix
+  date: 2026-07-10
+  kind: single
+  title: "Talking About Music (Remix) feat. Nenda"
+  links:
+    - text: "listen listen"
+      url: https://open.spotify.com/album/3Whe5H1Wpm6Z46U2DEPgP8
+
+- id: 2026-06-19-wiener-festwochen
+  date: 2026-06-19
+  kind: concert
+  title: "Wiener Festwochen, Badeschiff Wien"
+  links:
+    - text: "we were there, look"
+      url: https://www.instagram.com/cute_aggression_music
+
+- id: 2026-06-05-mica-interview
+  date: 2026-06-05
+  kind: press
+  title: "mica interview: „Wir wollten etwas Cooles ausprobieren“"
+  links:
+    - text: "read it"
+      url: https://www.musicaustria.at/wir-wollten-etwas-cooles-ausprobieren-ideen-entwickeln-und-dinge-verarbeiten-cute-aggression-im-mica-interview/
+
+- id: 2026-05-30-bogenfest
+  date: 2026-05-30
+  kind: concert
+  title: "Bogenfest Innsbruck"
+  links:
+    - text: "innsbruck babyyy"
+      url: https://www.instagram.com/cute_aggression_music
+
+- id: 2026-05-12-falter
+  date: 2026-05-12
+  kind: press
+  title: "Falter: „Die aufregendste heimische Band der Stunde“"
+  links:
+    - text: "read it"
+      url: https://www.falter.at/zeitung/20260512/die-aufregendste-heimische-band-der-stunde
+
+- id: 2026-05-08-make-us-crash-album
+  date: 2026-05-08
+  kind: album
+  title: "Make Us Crash — our debut album is out"
+  links:
+    - text: "listen listen listen"
+      url: https://open.spotify.com/album/1QMErtDFjl5RNMpBTooGPo
+
+- id: 2026-05-06-thegap
+  date: 2026-05-06
+  kind: press
+  title: "The Gap: „Mit Cute Aggression im Overkill-Modus“"
+  links:
+    - text: "read it"
+      url: https://thegap.at/cute-aggression-make-us-crash/
+
+- id: 2026-04-17-make-us-crash-single
+  date: 2026-04-17
+  kind: single
+  title: "Make Us Crash"
+  links:
+    - text: "listen"
+      url: https://open.spotify.com/album/5ms2yqY4A976MYe9CRAl8w
+
+- id: 2026-03-27-break-me
+  date: 2026-03-27
+  kind: single
+  title: "Break Me"
+  links:
+    - text: "break me"
+      url: https://open.spotify.com/album/1MuKsm1zL1bzlaeDmyRszG
+
+- id: 2025-06-28-agents-of-love
+  date: 2025-06-28
+  kind: single
+  title: "Agents Of Love"
+  links:
+    - text: "listen listen"
+      url: https://open.spotify.com/album/4YKrzEq3jWHEoCbsFAVcVv
+
+- id: 2025-11-25-arena-wien
+  date: 2025-11-25
+  kind: concert
+  title: "Arena Wien, DUBINSKI support"
+  links:
+    - text: "click me baby"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2025-11-15-megaworld
+  date: 2025-11-15
+  kind: concert
+  title: "megaworld.xyz: MEGAminiWORLD.XYZ"
+  links:
+    - text: "hello here is the link to click"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2025-11-02-flucc
+  date: 2025-11-02
+  kind: concert
+  title: "Flucc, Sonntagsdisco"
+  links:
+    - text: "pls"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2025-10-18-spektakel
+  date: 2025-10-18
+  kind: concert
+  title: "Spektakel, Sternatelier Festival"
+  links:
+    - text: "KLCIK KLICK KLICK"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2025-10-04-pmk-ibk
+  date: 2025-10-04
+  kind: concert
+  title: "PMK IBK, (Erika spielte Solo)"
+  links:
+    - text: "arghhalkjdshfglkj"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+# the old site dated this 25.07.2025, but Spotify says the single came out 03.10.2025.
+# went with Spotify — change it back if the July date meant something (announcement? presave?).
+- id: 2025-10-03-charlis-butt
+  date: 2025-10-03
+  kind: single
+  title: "Charli's Butt"
+  links:
+    - text: "listen listen"
+      url: https://open.spotify.com/album/3zwXP81fAczpjUt2vKeXAp
+
+- id: 2025-07-25-popfest
+  date: 2025-07-25
+  kind: concert
+  title: "Popfest Wien (im Prechtlsaal xoxo)"
+  links:
+    - text: "CLICK HEREEEEE"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2025-06-24-kramladen
+  date: 2025-06-24
+  kind: concert
+  title: "kramladen wien, with Lillie Creatures"
+  links:
+    - text: "click me baby"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+# FIXME: the old site said "a long long time ago" with no real date. This guess only
+# controls where it sorts — fix the `date:` if you remember the actual one.
+- id: 2025-03-01-sargfabrik
+  date: 2025-03-01
+  dateLabel: "a long long time ago"
+  kind: concert
+  title: "sargfabrik wien, GARDENS album release support"
+  links:
+    - text: "don't clikc pls no"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2024-09-27-b72
+  date: 2024-09-27
+  kind: concert
+  title: "b72 wien, ischia album release support"
+  links:
+    - text: "click clack click"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2024-09-13-kramladen
+  date: 2024-09-13
+  kind: concert
+  title: "kramladen wien, halal hardcore album release support"
+  links:
+    - text: "this is the link to the concert"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2024-07-04-kultursommer
+  date: 2024-07-04
+  kind: concert
+  title: "Kultursommer Stadt Wien"
+  links:
+    - text: "look mom"
+      url: https://kultursommer.wien/act/?id=336601-aaronerika3&lang=de
+
+- id: 2024-03-30-muehle
+  date: 2024-03-30
+  kind: concert
+  title: "ostern in der mühle"
+  links:
+    - text: "it was fun, see"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2024-02-14-talking-about-music
+  date: 2024-02-14
+  kind: single
+  title: "Talking About Music"
+  links:
+    - text: "listen listen listen :-O"
+      url: https://aaronerika.bandcamp.com/track/talking-about-music
+
+- id: 2024-01-19-akademie-rundgang
+  date: 2024-01-19
+  kind: concert
+  title: "rundgang der akademie der bildenden künste"
+  links:
+    - text: "dont click here"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2023-12-08-secret-gig
+  date: 2023-12-08
+  kind: concert
+  title: "extremely secret gig"
+  links:
+    - text: "dont click here"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2023-11-24-bad-feminist
+  date: 2023-11-24
+  kind: single
+  title: "Bad Feminist"
+  links:
+    - text: "presave"
+      url: https://distrokid.com/hyperfollow/aaronerika3/bad-feminist
+
+- id: 2023-11-22-tunnel
+  date: 2023-11-22
+  kind: concert
+  title: "tunnel vienna"
+  links:
+    - text: "click here to earn free coins"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2023-10-08-ministry-of-artists
+  date: 2023-10-08
+  kind: concert
+  title: "ministry of artists vienna"
+  links:
+    - text: "spicy pics"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+- id: 2023-05-26-secret-gig-baby
+  date: 2023-05-26
+  kind: concert
+  title: "secret gig baby"
+  links:
+    - text: "download now"
+      url: https://www.instagram.com/xx_aaron_erika_xx
+
+# the old site linked this to "https://" which went nowhere, so: no link
+- id: 2023-01-14-toytopia
+  date: 2023-01-14
+  kind: concert
+  title: "toytopia vienna"
+
+- id: 2022-12-20-pmk-innsbruck
+  date: 2022-12-20
+  kind: concert
+  title: "p.m.k. innsbruck"
+  links:
+    - text: "event"
+      url: https://www.instagram.com/xx_aaron_erika_xx

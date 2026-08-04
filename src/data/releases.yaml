@@ -1,0 +1,63 @@
+# Music. Rendered as playable embeds, newest first.
+#
+# spotify:     paste the normal share link (Spotify > Share > Copy Song/Album Link).
+#              Works for track and album links. The embed player is derived from it.
+# bandcamp:    Bandcamp needs its own numeric id, which is NOT in the page url.
+#              Get it from Bandcamp > your release > Share/Embed > Embed this album,
+#              then copy the number out of `album=1234567890` (or `track=...`).
+#              Put that number in bandcampId, and prefix it with "track=" for tracks:
+#                bandcampId: "album=1234567890"
+#                bandcampId: "track=1234567890"
+#              bandcampUrl is the normal page link, used for the "buy" button.
+#
+# Anything without an embed still renders as a plain link button, so partial info is fine.
+
+- id: talking-about-music-remix
+  date: 2026-07-10
+  kind: single
+  title: "Talking About Music (Remix) feat. Nenda"
+  spotify: https://open.spotify.com/album/3Whe5H1Wpm6Z46U2DEPgP8
+
+- id: make-us-crash-album
+  date: 2026-05-08
+  kind: album
+  title: "Make Us Crash"
+  spotify: https://open.spotify.com/album/1QMErtDFjl5RNMpBTooGPo
+
+- id: make-us-crash-single
+  date: 2026-04-17
+  kind: single
+  title: "Make Us Crash"
+  spotify: https://open.spotify.com/album/5ms2yqY4A976MYe9CRAl8w
+
+- id: break-me
+  date: 2026-03-27
+  kind: single
+  title: "Break Me"
+  spotify: https://open.spotify.com/album/1MuKsm1zL1bzlaeDmyRszG
+
+- id: charlis-butt
+  date: 2025-10-03
+  kind: single
+  title: "Charli's Butt"
+  spotify: https://open.spotify.com/album/3zwXP81fAczpjUt2vKeXAp
+
+- id: agents-of-love
+  date: 2025-06-28
+  kind: single
+  title: "Agents Of Love"
+  spotify: https://open.spotify.com/album/4YKrzEq3jWHEoCbsFAVcVv
+
+- id: talking-about-music
+  date: 2024-02-14
+  kind: single
+  title: "Talking About Music"
+  spotify: https://open.spotify.com/album/1GFzXVpwrHtZqjCRRSWIvs
+  bandcampUrl: https://aaronerika.bandcamp.com/track/talking-about-music
+  # bandcampId: "track=..."   <- fill in from the Bandcamp embed code
+
+- id: bad-feminist
+  date: 2023-11-24
+  kind: single
+  title: "Bad Feminist"
+  spotify: https://open.spotify.com/album/6erlGEVvbHjDqOUzU01dSX

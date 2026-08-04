@@ -1,0 +1,30 @@
+# Social links. Used on / and on the linktree page at /links.
+#   order:    low numbers show up first
+#   featured: true -> shown big at the top of /links
+- id: instagram
+  order: 1
+  text: instagram
+  url: https://www.instagram.com/cute_aggression_music
+  featured: true
+
+- id: spotify
+  order: 2
+  text: spotify
+  url: https://open.spotify.com/intl-de/artist/3rbniHDRignIfH40jqg491?si=cB7LG9TxQji6dLBH5KqrDw
+  featured: true
+
+- id: bandcamp
+  order: 3
+  text: bandcamp
+  url: https://cuteaggressionmusic.bandcamp.com
+  featured: true
+
+- id: press
+  order: 4
+  text: press
+  url: https://drive.google.com/drive/folders/1GwIzbjxxkbSLlQfv0d8AmRoVmMlS_AN2?usp=sharing
+
+- id: contact
+  order: 5
+  text: contact
+  url: mailto:cuteaggressionmusic@gmail.com

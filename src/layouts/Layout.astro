@@ -1,33 +1,68 @@
 ---
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'cute aggression',
+	description = 'Official website of cute aggression',
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Official website of cute aggresion" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/heart.gif" />
 		<meta name="generator" content={Astro.generator} />
-		<title>cute aggression</title>
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<title>{title}</title>
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
+
+<script is:inline>
+	// clicking a link stains the page and waits, then goes. the tab has to be opened
+	// inside the click itself — opening it after the delay gets eaten by popup blockers.
+	document.addEventListener('click', function (event) {
+		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+		const link = event.target.closest('a');
+		if (!link || !link.href || link.dataset.plain !== undefined) return;
+
+		const external = link.protocol.startsWith('http') && link.origin !== location.origin;
+		const tab = external ? window.open('', '_blank') : null;
+		if (external && !tab) return; // blocked: let the browser handle the click normally
+
+		event.preventDefault();
+		document.documentElement.style.background = "url('/fireskull.gif')";
+		document.documentElement.style.filter = 'hue-rotate(90deg)';
+
+		setTimeout(function () {
+			if (tab) {
+				tab.opener = null; // don't hand the opened site a handle on us
+				tab.location = link.href;
+			} else {
+				location.href = link.href;
+			}
+		}, 800);
+	});
+</script>
+
 <style is:global>
 	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
+		--primary: #f0f;
+		--secondary: #000;
+		--tertiary: #0ff;
 		color: var(--secondary);
-		background: url("/heart.gif");
+		background: url('/heart.gif');
 	}
 
 	::selection {
@@ -38,5 +73,121 @@
 	html {
 		font-family: system-ui, sans-serif;
 		overflow: hidden;
+	}
+
+	main {
+		margin: auto;
+		padding: 10px;
+		width: 90%;
+		height: 100vh;
+		max-width: calc(100% - 2rem);
+		font-size: 17px;
+		line-height: 1.6;
+		scrollbar-color: var(--primary) var(--secondary);
+		overflow-y: scroll;
+	}
+
+	h1 {
+		font-size: 2rem;
+		font-weight: 300;
+		background: var(--primary);
+		color: var(--secondary);
+		padding: 10px;
+		font-style: italic;
+		margin: 0;
+	}
+
+	h2 {
+		font-size: 2rem;
+		font-weight: 600;
+		text-decoration: underline;
+		width: fit-content;
+		background: var(--primary);
+	}
+
+	h3 {
+		font-size: 1.5rem;
+		font-style: italic;
+		font-weight: 500;
+	}
+
+	p {
+		margin: 0;
+		padding: 10px;
+	}
+
+	a {
+		font-size: 1rem;
+		font-weight: 500;
+		border: 2px solid;
+		padding: 10px;
+		color: var(--secondary);
+		background: var(--tertiary);
+		margin-right: 15px;
+		display: inline-block;
+	}
+
+	a:hover {
+		color: var(--tertiary);
+		background: var(--primary);
+		cursor: pointer;
+		transform: scale(1.2);
+	}
+
+	footer {
+		font-size: 0.8rem;
+		font-weight: 300;
+		text-align: center;
+		margin-bottom: 30px;
+		padding: 10px;
+		background: var(--tertiary);
+	}
+
+	.social-links {
+		display: flex;
+		background: var(--primary);
+		justify-content: space-evenly;
+		flex-direction: column;
+		padding: 10px;
+	}
+
+	/* scrollbar */
+	::-webkit-scrollbar {
+		width: 10px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: #888;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: #555;
+	}
+
+	@media screen and (min-width: 600px) {
+		main {
+			width: 50%;
+			padding: 1rem;
+		}
+
+		.social-links {
+			flex-direction: row;
+		}
+
+		h1 {
+			font-size: 4rem;
+		}
+
+		h2 {
+			font-size: 3rem;
+		}
+
+		h3 {
+			font-size: 2rem;
+		}
 	}
 </style>
