@@ -34,6 +34,9 @@ const latestUrl = latest?.data.spotify ?? latest?.data.bandcampUrl ?? latest?.da
 		flex-direction: column;
 		gap: 12px;
 		padding: 10px 0 30px;
+		/* a linktree is a phone-shaped thing — don't let it stretch to the full page */
+		max-width: 460px;
+		margin: 0 auto;
 	}
 
 	/* override the shared inline-block link style — these are full-width tap targets */

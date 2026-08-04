@@ -12,6 +12,9 @@ const news = defineCollection({
 		dateLabel: z.string().optional(),
 		kind: z.enum(['concert', 'single', 'album', 'video', 'press', 'charts']),
 		title: z.string(),
+		// a press item with both of these gets pulled out as the big quote on the front page
+		quote: z.string().optional(),
+		outlet: z.string().optional(),
 		links: linkList.default([]),
 	}),
 });

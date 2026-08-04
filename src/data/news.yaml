@@ -57,6 +57,10 @@
   date: 2026-05-12
   kind: press
   title: "Falter: „Die aufregendste heimische Band der Stunde“"
+  # quote + outlet -> this one becomes the big pull quote on the front page.
+  # move them to another press entry to promote a different review.
+  quote: "Die aufregendste heimische Band der Stunde"
+  outlet: "Falter"
   links:
     - text: "read it"
       url: https://www.falter.at/zeitung/20260512/die-aufregendste-heimische-band-der-stunde

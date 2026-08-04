@@ -12,6 +12,7 @@ const releases = (await getCollection('releases')).sort(byNewest);
 const videos = (await getCollection('videos')).sort(byNewest);
 
 const fmt = new Intl.DateTimeFormat('de-AT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+const shortFmt = new Intl.DateTimeFormat('de-AT', { day: '2-digit', month: '2-digit' });
 
 const label: Record<string, string> = {
 	concert: 'concert',
@@ -21,169 +22,400 @@ const label: Record<string, string> = {
 	press: 'press',
 	charts: 'charts',
 };
+
+// anything from the last 30 days wears the NEW badge, so it expires on its own
+const DAY = 86_400_000;
+const isNew = (d: Date) => Date.now() - d.valueOf() < 30 * DAY;
+
+const album = releases.find((r) => r.data.kind === 'album');
+const latestSingle = releases.find((r) => r.data.kind !== 'album');
+const backCatalogue = releases.filter((r) => r !== album && r !== latestSingle);
+
+const charts = news.find((n) => n.data.kind === 'charts');
+const headline = charts ?? news[0];
+const pullQuote = news.find((n) => n.data.kind === 'press' && n.data.quote && n.data.outlet);
+const press = news.filter((n) => n.data.kind === 'press');
+
+const shows = news.filter((n) => n.data.kind === 'concert');
+const recentShows = shows.slice(0, 6);
+const oldShows = shows.slice(6);
+const recent = news.slice(0, 5);
+
+const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify);
 ---
 
-<Layout>
+<Layout description="cute aggression — vienna. debut album make us crash out now.">
 	<main>
 		<h1>cute aggression</h1>
 
-		<div class="social-links">
-			{links.map((link) => <a href={link.data.url}>{link.data.text}</a>)}
-			<a href="/links">links</a>
-		</div>
-
-		<div class="bio">
-			<p>
-				cute aggression make music. music that you like. or don’t. to cute aggression that
-				doesn’t matter. come by when cute aggression play a concert. they play synthesizers
-				and drum machines and guitars and stuff. or maybe they don’t. maybe they just play
-				with your expectations.
-			</p>
-			<p>our debut album <b>make us crash</b> is out now.</p>
-			<p>currently recording our first ep. out this fall.</p>
-			<p><b>XOXO</b></p>
-		</div>
+		<nav class="linkbar">
+			{links.map((l) => <a href={l.data.url}>{l.data.text}</a>)}
+			<a href="/links">one-link page</a>
+		</nav>
 
 		{
-			releases.length > 0 && (
-				<>
+			headline && (
+				<div class="ticker">
+					<span>
+						{'>>> '}
+						{label[headline.data.kind]}: {headline.data.title}
+						{' <<<'}
+					</span>
+				</div>
+			)
+		}
+
+		<div class="grid">
+			<div>
+				{
+					album && (
+						<section class="panel hero">
+							{isNew(album.data.date) && <p class="badge blink">★ NEW ★</p>}
+							<h2>out now</h2>
+							<h3 class="hero-title">{album.data.title}</h3>
+							<p class="mono meta">debut album · {fmt.format(album.data.date)}</p>
+							{spotifyOf(album) && (
+								<iframe
+									src={spotifyOf(album)}
+									height="352"
+									loading="eager"
+									title={album.data.title}
+									allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"
+								/>
+							)}
+						</section>
+					)
+				}
+
+				{
+					pullQuote && (
+						<section class="panel quote-panel">
+							<h2>press</h2>
+							<blockquote>„{pullQuote.data.quote}“</blockquote>
+							<p class="mono attrib">— {pullQuote.data.outlet}</p>
+							<div>
+								{press.flatMap((p) =>
+									p.data.links.map((l) => <a href={l.url}>{p.data.outlet ?? p.data.title.split(':')[0]}</a>),
+								)}
+								<a href="https://drive.google.com/drive/folders/1GwIzbjxxkbSLlQfv0d8AmRoVmMlS_AN2">press kit</a>
+							</div>
+						</section>
+					)
+				}
+
+				<section class="panel">
 					<h2>listen</h2>
-					<div class="stack">
-						{releases.map(({ data }) => {
-							const spotify = spotifyEmbed(data.spotify);
-							const bandcamp = bandcampEmbed(data.bandcampId);
-							return (
-								<div class="card release">
+					{
+						latestSingle && (
+							<>
+								<h3>{latestSingle.data.title}</h3>
+								<p class="mono meta">
+									latest single · {fmt.format(latestSingle.data.date)}
+								</p>
+								{spotifyOf(latestSingle) && (
+									<iframe
+										src={spotifyOf(latestSingle)}
+										height="152"
+										loading="lazy"
+										title={latestSingle.data.title}
+										allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"
+									/>
+								)}
+								{bandcampEmbed(latestSingle.data.bandcampId) && (
+									<iframe
+										src={bandcampEmbed(latestSingle.data.bandcampId)}
+										height="120"
+										loading="lazy"
+										title={latestSingle.data.title}
+										seamless
+									/>
+								)}
+							</>
+						)
+					}
+					{
+						backCatalogue.length > 0 && (
+							<details>
+								<summary>everything else ({backCatalogue.length})</summary>
+								<div class="rows">
+									{backCatalogue.map((r) => {
+										const href = r.data.spotify ?? r.data.bandcampUrl ?? r.data.links[0]?.url;
+										const meta = (
+											<>
+												<span class="mono">{fmt.format(r.data.date)}</span>
+												<span>{r.data.title}</span>
+											</>
+										);
+										return href ? (
+											<a class="row" href={href}>
+												{meta}
+											</a>
+										) : (
+											<div class="row">{meta}</div>
+										);
+									})}
+								</div>
+							</details>
+						)
+					}
+				</section>
+
+				{
+					videos.length > 0 && (
+						<section class="panel">
+							<h2>watch</h2>
+							{videos.map(({ data }) => (
+								<>
 									<h3>{data.title}</h3>
-									{spotify && (
+									<div class="video-frame">
 										<iframe
-											src={spotify}
-											height={data.kind === 'album' ? 352 : 152}
+											src={youtubeEmbed(data.youtube) ?? data.youtube}
 											loading="lazy"
 											title={data.title}
-											allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"
+											allow="accelerometer; encrypted-media; picture-in-picture; web-share"
+											allowfullscreen
 										/>
-									)}
-									{bandcamp && (
-										<iframe src={bandcamp} height="120" loading="lazy" title={data.title} seamless />
-									)}
-									<div>
-										{data.bandcampUrl && <a href={data.bandcampUrl}>bandcamp</a>}
-										{data.links.map((l) => (
-											<a href={l.url}>{l.text}</a>
-										))}
 									</div>
-								</div>
-							);
-						})}
-					</div>
-				</>
-			)
-		}
-
-		{
-			videos.length > 0 && (
-				<>
-					<h2>watch</h2>
-					<div class="stack">
-						{videos.map(({ data }) => (
-							<div class="card video">
-								<h3>{data.title}</h3>
-								<div class="video-frame">
-									<iframe
-										src={youtubeEmbed(data.youtube) ?? data.youtube}
-										loading="lazy"
-										title={data.title}
-										allow="accelerometer; encrypted-media; picture-in-picture; web-share"
-										allowfullscreen
-									/>
-								</div>
-							</div>
-						))}
-					</div>
-				</>
-			)
-		}
-
-		<h2>news</h2>
-		<div class="stack">
-			{
-				news.map(({ data }) => (
-					<div class:list={['card', 'news-item', { single: data.kind !== 'concert' }]}>
-						<p>{data.dateLabel ?? fmt.format(data.date)}</p>
-						<h3>
-							<b>{label[data.kind]}: </b>
-							{data.title}
-						</h3>
-						<div>
-							{data.links.map((l) => (
-								<a href={l.url}>{l.text}</a>
+								</>
 							))}
-						</div>
+						</section>
+					)
+				}
+
+				<section class="panel shows">
+					<h2>shows</h2>
+					<div class="rows">
+						{
+							recentShows.map(({ data }) => {
+								const meta = (
+									<>
+										<span class="mono">{data.dateLabel ?? fmt.format(data.date)}</span>
+										<span>{data.title}</span>
+									</>
+								);
+								return data.links[0] ? (
+									<a class="row" href={data.links[0].url}>
+										{meta}
+									</a>
+								) : (
+									<div class="row">{meta}</div>
+								);
+							})
+						}
 					</div>
-				))
-			}
+					{
+						oldShows.length > 0 && (
+							<details>
+								<summary>the full ancient history ({oldShows.length})</summary>
+								<div class="rows">
+									{oldShows.map(({ data }) => {
+										const meta = (
+											<>
+												<span class="mono">{data.dateLabel ?? fmt.format(data.date)}</span>
+												<span>{data.title}</span>
+											</>
+										);
+										return data.links[0] ? (
+											<a class="row" href={data.links[0].url}>
+												{meta}
+											</a>
+										) : (
+											<div class="row">{meta}</div>
+										);
+									})}
+								</div>
+							</details>
+						)
+					}
+				</section>
+			</div>
+
+			<aside>
+				<section class="panel side">
+					<h2>new</h2>
+					<div class="rows tight">
+						{
+							recent.map(({ data }) => (
+								<div class="row stacked">
+									<span class="mono">
+										{data.dateLabel ?? shortFmt.format(data.date)} · {label[data.kind]}
+									</span>
+									<span>{data.title}</span>
+								</div>
+							))
+						}
+					</div>
+				</section>
+
+				<section class="panel side about">
+					<h2>about</h2>
+					<p>
+						cute aggression make music. music that you like. or don’t. to cute aggression
+						that doesn’t matter. come by when cute aggression play a concert. they play
+						synthesizers and drum machines and guitars and stuff. or maybe they don’t.
+						maybe they just play with your expectations.
+					</p>
+					<p>currently recording our first ep. out this fall.</p>
+					<p><b>XOXO</b></p>
+				</section>
+			</aside>
 		</div>
+
 		<footer>website by aaron abebe</footer>
 	</main>
 </Layout>
 
 <style>
-	.bio {
+	.linkbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
 		background: var(--primary);
+		border: 4px solid var(--secondary);
+		border-top: 0;
+		padding: 10px;
+		margin-bottom: 22px;
 	}
 
-	.stack {
+	.linkbar a {
+		margin: 0;
+		flex: 1 1 auto;
+		text-align: center;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0 22px;
+	}
+
+	.hero {
+		background: var(--tertiary);
+		position: relative;
+	}
+
+	.hero-title {
+		font-size: clamp(1.6rem, 7vw, 3rem);
+		line-height: 1;
+	}
+
+	.badge {
+		position: absolute;
+		top: -14px;
+		right: -6px;
+		background: var(--alert);
+		border: 3px solid var(--secondary);
+		font-size: 1rem;
+		font-weight: 700;
+		padding: 2px 8px;
+	}
+
+	.meta {
+		font-size: 0.85em;
+		padding-bottom: 10px;
+	}
+
+	.quote-panel {
+		background: var(--alert);
+	}
+
+	blockquote {
+		font-size: clamp(1.1rem, 4.4vw, 1.9rem);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		line-height: 1.15;
+		text-transform: uppercase;
+		margin: 0;
+		padding: 4px 0;
+	}
+
+	.attrib {
+		font-size: 0.9em;
+		padding-bottom: 12px;
+	}
+
+	.rows {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		gap: 6px;
+		margin-bottom: 10px;
 	}
 
-	.card {
-		padding-top: 1rem;
-		padding-bottom: 10px;
-		width: 100%;
-		text-align: center;
+	/* list rows are full width, so the shared a:hover scale would make them overlap */
+	.row {
+		display: flex;
+		gap: 12px;
+		align-items: baseline;
+		margin: 0;
+		padding: 7px 10px;
+		border: 2px solid var(--secondary);
+		background: var(--paper);
+	}
+
+	.row.stacked {
+		flex-direction: column;
+		gap: 0;
+		line-height: 1.4;
+	}
+
+	a.row:hover {
+		transform: none;
 		background: var(--primary);
+		color: var(--secondary);
 	}
 
-	.news-item {
-		border-bottom: 2px dashed;
+	.tight .row {
+		font-size: 0.95em;
 	}
 
-	.single {
+	summary {
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		text-transform: uppercase;
 		background: var(--tertiary);
+		border: 2px solid var(--secondary);
+		padding: 5px 10px;
+		width: fit-content;
+		cursor: pointer;
 	}
 
-	.release,
-	.video {
-		background: var(--tertiary);
-		border-bottom: 2px dashed;
+	summary:hover {
+		background: var(--paper);
+	}
+
+	details[open] summary {
+		margin-bottom: 10px;
 	}
 
 	iframe {
 		border: 0;
 		width: 100%;
 		display: block;
-		margin-bottom: 10px;
+		margin-bottom: 6px;
 	}
 
 	/* keeps youtube 16:9 without javascript */
 	.video-frame {
 		aspect-ratio: 16 / 9;
+		margin-bottom: 10px;
 	}
 
 	.video-frame iframe {
 		height: 100%;
 	}
 
-	@media screen and (min-width: 600px) {
-		.card {
-			width: 60%;
+	.about p {
+		font-size: 0.95em;
+	}
+
+	@media screen and (min-width: 900px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr) 300px;
 		}
 
-		.stack {
-			width: 100%;
+		.side {
+			padding: 12px;
 		}
 	}
 </style>
