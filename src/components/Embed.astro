@@ -1,0 +1,67 @@
+---
+// One player for every service, so nothing on the site hand-writes an iframe.
+// Renders nothing at all when the url has no embed — callers can just drop it in
+// next to a plain link and let it disappear on its own.
+import { autoEmbed } from '../lib/embed.ts';
+
+interface Props {
+	url?: string;
+	title: string;
+	/** mini = just the play bar, compact = the one-line strip, full = artwork-sized */
+	size?: 'mini' | 'compact' | 'full';
+	/** the one player above the fold shouldn't wait for lazy loading */
+	eager?: boolean;
+}
+
+const { url, title, size = 'compact', eager = false } = Astro.props;
+
+const embed = autoEmbed(url);
+
+// heights are what each service actually needs — below these the player clips itself
+const HEIGHT = {
+	spotify: { mini: 80, compact: 152, full: 352 },
+	bandcamp: { mini: 42, compact: 120, full: 350 },
+} as const;
+---
+
+{
+	embed &&
+		(embed.kind === 'youtube' ? (
+			<div class="video-frame">
+				<iframe
+					src={embed.src}
+					loading={eager ? 'eager' : 'lazy'}
+					title={title}
+					allow="accelerometer; encrypted-media; picture-in-picture; web-share"
+					allowfullscreen
+				/>
+			</div>
+		) : (
+			<iframe
+				src={embed.src}
+				height={HEIGHT[embed.kind][size]}
+				loading={eager ? 'eager' : 'lazy'}
+				title={title}
+				allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"
+			/>
+		))
+}
+
+<style>
+	iframe {
+		border: 0;
+		width: 100%;
+		display: block;
+		margin-bottom: 6px;
+	}
+
+	/* keeps youtube 16:9 without javascript */
+	.video-frame {
+		aspect-ratio: 16 / 9;
+		margin-bottom: 10px;
+	}
+
+	.video-frame iframe {
+		height: 100%;
+	}
+</style>

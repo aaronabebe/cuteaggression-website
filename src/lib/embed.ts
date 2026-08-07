@@ -21,3 +21,23 @@ export function bandcampEmbed(id: string | undefined): string | null {
 	if (!id || !/^(album|track)=\d+$/.test(id)) return null;
 	return `https://bandcamp.com/EmbeddedPlayer/${id}/size=large/bgcol=ffffff/linkcol=ff00ff/tracklist=false/transparent=true/`;
 }
+
+export type Embedded = { src: string; kind: 'spotify' | 'youtube' | 'bandcamp' };
+
+/**
+ * Whatever a yaml file happens to contain -> the one player that fits it.
+ * Takes share links, and also the raw `album=123` id Bandcamp makes you dig out.
+ * Returns null for anything with no player, so callers can render a plain link.
+ */
+export function autoEmbed(url: string | undefined): Embedded | null {
+	const spotify = spotifyEmbed(url);
+	if (spotify) return { src: spotify, kind: 'spotify' };
+
+	const youtube = youtubeEmbed(url);
+	if (youtube) return { src: youtube, kind: 'youtube' };
+
+	const bandcamp = bandcampEmbed(url);
+	if (bandcamp) return { src: bandcamp, kind: 'bandcamp' };
+
+	return null;
+}

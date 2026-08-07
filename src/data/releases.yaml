@@ -9,6 +9,8 @@
 #                bandcampId: "album=1234567890"
 #                bandcampId: "track=1234567890"
 #              bandcampUrl is the normal page link, used for the "buy" button.
+# cover:       artwork in public/, e.g. /covers/make-us-crash.jpg. Shown on the front
+#              page hero instead of a player. Square images look best.
 #
 # Anything without an embed still renders as a plain link button, so partial info is fine.
 
@@ -23,6 +25,17 @@
   kind: album
   title: "Make Us Crash"
   spotify: https://open.spotify.com/album/1QMErtDFjl5RNMpBTooGPo
+  bandcampUrl: https://cuteaggressionmusic.bandcamp.com/album/make-us-crash
+  cover: /covers/make-us-crash.jpg
+  # extra buttons in the hero listen row. apple + tidal point at the artist page,
+  # deezer at the album — they don't all have an album link.
+  links:
+    - text: apple music
+      url: https://music.apple.com/us/artist/cute-aggression/718982213
+    - text: tidal
+      url: https://tidal.com/artist/5137074
+    - text: deezer
+      url: https://www.deezer.com/en/album/973702131
 
 - id: make-us-crash-single
   date: 2026-04-17

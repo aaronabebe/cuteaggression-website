@@ -1,7 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import { spotifyEmbed, youtubeEmbed, bandcampEmbed } from '../lib/embed.ts';
+import Marquee from '../components/Marquee.astro';
+import Embed from '../components/Embed.astro';
+import Footer from '../components/Footer.astro';
+import Rows from '../components/Rows.astro';
+import type { Row } from '../components/Rows.astro';
 
 const byNewest = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
 	b.data.date.valueOf() - a.data.date.valueOf();
@@ -21,6 +25,7 @@ const label: Record<string, string> = {
 	video: 'new video',
 	press: 'press',
 	charts: 'charts',
+	award: 'award',
 };
 
 // anything from the last 30 days wears the NEW badge, so it expires on its own
@@ -32,16 +37,35 @@ const latestSingle = releases.find((r) => r.data.kind !== 'album');
 const backCatalogue = releases.filter((r) => r !== album && r !== latestSingle);
 
 const charts = news.find((n) => n.data.kind === 'charts');
-const headline = charts ?? news[0];
+const award = news.find((n) => n.data.kind === 'award');
 const pullQuote = news.find((n) => n.data.kind === 'press' && n.data.quote && n.data.outlet);
 const press = news.filter((n) => n.data.kind === 'press');
 
+// the ticker leads with the two things worth shouting about, then whatever is newest
+const shouted = [charts, award].filter((n) => n !== undefined);
+const ticker = [...shouted, ...news.filter((n) => !shouted.includes(n))].slice(0, 6);
+
+// gigs that haven't happened yet belong at the top, soonest first — everything
+// else is history. `date` is midnight, so compare against midnight today.
+const today = new Date().setHours(0, 0, 0, 0);
 const shows = news.filter((n) => n.data.kind === 'concert');
-const recentShows = shows.slice(0, 6);
-const oldShows = shows.slice(6);
+const upcoming = shows.filter((s) => s.data.date.valueOf() >= today).reverse();
+const played = shows.filter((s) => s.data.date.valueOf() < today);
+const recentShows = played.slice(0, 6);
+const oldShows = played.slice(6);
 const recent = news.slice(0, 5);
 
-const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify);
+const showRow = ({ data }: (typeof shows)[number]): Row => ({
+	meta: data.dateLabel ?? fmt.format(data.date),
+	title: data.title,
+	href: data.links[0]?.url,
+});
+
+const releaseRow = ({ data }: (typeof releases)[number]): Row => ({
+	meta: fmt.format(data.date),
+	title: data.title,
+	href: data.spotify ?? data.bandcampUrl ?? data.links[0]?.url,
+});
 ---
 
 <Layout description="cute aggression — vienna. debut album make us crash out now.">
@@ -49,47 +73,63 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 		<h1>cute aggression</h1>
 
 		<nav class="linkbar">
-			{links.map((l) => <a href={l.data.url}>{l.data.text}</a>)}
-			<a href="/links">one-link page</a>
+			{/* the streaming links live on /links now — the bar only keeps the rest */}
+			{links.filter((l) => !l.data.featured).map((l) => <a href={l.data.url}>{l.data.text}</a>)}
+			<a href="/links">♥ all the links ♥</a>
 		</nav>
 
-		{
-			headline && (
-				<div class="ticker">
-					<span>
-						{'>>> '}
-						{label[headline.data.kind]}: {headline.data.title}
-						{' <<<'}
-					</span>
-				</div>
-			)
-		}
+		<Marquee gif="/flame.gif" speed={28}>
+			{ticker.map((n) => `>>> ${label[n.data.kind]}: ${n.data.title} `)}{'<<<'}
+		</Marquee>
 
 		<div class="grid">
 			<div>
 				{
 					album && (
-						<section class="panel hero">
+						<section class="panel hero tinted">
 							{isNew(album.data.date) && <p class="badge blink">★ NEW ★</p>}
 							<h2>out now</h2>
-							<h3 class="hero-title">{album.data.title}</h3>
-							<p class="mono meta">debut album · {fmt.format(album.data.date)}</p>
-							{spotifyOf(album) && (
-								<iframe
-									src={spotifyOf(album)}
-									height="352"
-									loading="eager"
-									title={album.data.title}
-									allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"
-								/>
-							)}
+							<div class="hero-body">
+								{album.data.cover && (
+									<img
+										class="cover"
+										src={album.data.cover}
+										alt={`${album.data.title} album cover`}
+										width="640"
+										height="640"
+									/>
+								)}
+								<div>
+									<h3 class="hero-title">{album.data.title}</h3>
+									<p class="mono meta">debut album · {fmt.format(album.data.date)}</p>
+									<div class="hero-links">
+										{album.data.spotify && <a href={album.data.spotify}>spotify</a>}
+										{album.data.bandcampUrl && <a href={album.data.bandcampUrl}>bandcamp</a>}
+										{album.data.links.map((l) => (
+											<a href={l.url}>{l.text}</a>
+										))}
+									</div>
+								</div>
+							</div>
+						</section>
+					)
+				}
+
+				<div class="divider"></div>
+
+				{
+					upcoming.length > 0 && (
+						<section class="panel next tinted">
+							<h2>next</h2>
+							<p class="mono blink soon">▶ ▶ ▶ come by</p>
+							<Rows items={upcoming.map(showRow)} />
 						</section>
 					)
 				}
 
 				{
 					pullQuote && (
-						<section class="panel quote-panel">
+						<section class="panel quote-panel tinted">
 							<h2>press</h2>
 							<blockquote>„{pullQuote.data.quote}“</blockquote>
 							<p class="mono attrib">— {pullQuote.data.outlet}</p>
@@ -103,33 +143,17 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 					)
 				}
 
+				<div class="divider"></div>
+
 				<section class="panel">
 					<h2>listen</h2>
 					{
 						latestSingle && (
 							<>
 								<h3>{latestSingle.data.title}</h3>
-								<p class="mono meta">
-									latest single · {fmt.format(latestSingle.data.date)}
-								</p>
-								{spotifyOf(latestSingle) && (
-									<iframe
-										src={spotifyOf(latestSingle)}
-										height="152"
-										loading="lazy"
-										title={latestSingle.data.title}
-										allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"
-									/>
-								)}
-								{bandcampEmbed(latestSingle.data.bandcampId) && (
-									<iframe
-										src={bandcampEmbed(latestSingle.data.bandcampId)}
-										height="120"
-										loading="lazy"
-										title={latestSingle.data.title}
-										seamless
-									/>
-								)}
+								<p class="mono meta">latest single · {fmt.format(latestSingle.data.date)}</p>
+								<Embed url={latestSingle.data.spotify} title={latestSingle.data.title} />
+								<Embed url={latestSingle.data.bandcampId} title={latestSingle.data.title} />
 							</>
 						)
 					}
@@ -137,24 +161,7 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 						backCatalogue.length > 0 && (
 							<details>
 								<summary>everything else ({backCatalogue.length})</summary>
-								<div class="rows">
-									{backCatalogue.map((r) => {
-										const href = r.data.spotify ?? r.data.bandcampUrl ?? r.data.links[0]?.url;
-										const meta = (
-											<>
-												<span class="mono">{fmt.format(r.data.date)}</span>
-												<span>{r.data.title}</span>
-											</>
-										);
-										return href ? (
-											<a class="row" href={href}>
-												{meta}
-											</a>
-										) : (
-											<div class="row">{meta}</div>
-										);
-									})}
-								</div>
+								<Rows items={backCatalogue.map(releaseRow)} />
 							</details>
 						)
 					}
@@ -167,15 +174,7 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 							{videos.map(({ data }) => (
 								<>
 									<h3>{data.title}</h3>
-									<div class="video-frame">
-										<iframe
-											src={youtubeEmbed(data.youtube) ?? data.youtube}
-											loading="lazy"
-											title={data.title}
-											allow="accelerometer; encrypted-media; picture-in-picture; web-share"
-											allowfullscreen
-										/>
-									</div>
+									<Embed url={data.youtube} title={data.title} />
 								</>
 							))}
 						</section>
@@ -183,47 +182,13 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 				}
 
 				<section class="panel shows">
-					<h2>shows</h2>
-					<div class="rows">
-						{
-							recentShows.map(({ data }) => {
-								const meta = (
-									<>
-										<span class="mono">{data.dateLabel ?? fmt.format(data.date)}</span>
-										<span>{data.title}</span>
-									</>
-								);
-								return data.links[0] ? (
-									<a class="row" href={data.links[0].url}>
-										{meta}
-									</a>
-								) : (
-									<div class="row">{meta}</div>
-								);
-							})
-						}
-					</div>
+					<h2>played</h2>
+					<Rows items={recentShows.map(showRow)} />
 					{
 						oldShows.length > 0 && (
 							<details>
 								<summary>the full ancient history ({oldShows.length})</summary>
-								<div class="rows">
-									{oldShows.map(({ data }) => {
-										const meta = (
-											<>
-												<span class="mono">{data.dateLabel ?? fmt.format(data.date)}</span>
-												<span>{data.title}</span>
-											</>
-										);
-										return data.links[0] ? (
-											<a class="row" href={data.links[0].url}>
-												{meta}
-											</a>
-										) : (
-											<div class="row">{meta}</div>
-										);
-									})}
-								</div>
+								<Rows items={oldShows.map(showRow)} />
 							</details>
 						)
 					}
@@ -233,18 +198,14 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 			<aside>
 				<section class="panel side">
 					<h2>new</h2>
-					<div class="rows tight">
-						{
-							recent.map(({ data }) => (
-								<div class="row stacked">
-									<span class="mono">
-										{data.dateLabel ?? shortFmt.format(data.date)} · {label[data.kind]}
-									</span>
-									<span>{data.title}</span>
-								</div>
-							))
-						}
-					</div>
+					<Rows
+						stacked
+						tight
+						items={recent.map(({ data }) => ({
+							meta: `${data.dateLabel ?? shortFmt.format(data.date)} · ${label[data.kind]}`,
+							title: data.title,
+						}))}
+					/>
 				</section>
 
 				<section class="panel side about">
@@ -261,7 +222,7 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 			</aside>
 		</div>
 
-		<footer>website by aaron abebe</footer>
+		<Footer />
 	</main>
 </Layout>
 
@@ -299,6 +260,46 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 		line-height: 1;
 	}
 
+	/* cover beside the text on wide screens, stacked on phones. both children get a
+	   flex basis so they share the row instead of one wrapping and leaving a gap. */
+	.hero-body {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		align-items: flex-start;
+	}
+
+	.hero-body > div {
+		flex: 3 1 200px;
+		min-width: 0;
+	}
+
+	.cover {
+		flex: 1 1 170px;
+		/* an image's automatic minimum size is its intrinsic 640px, which would push
+		   the text off the row no matter how small the basis is */
+		min-width: 0;
+		max-width: 240px;
+		height: auto;
+		display: block;
+		border: 3px solid var(--secondary);
+		box-shadow: 5px 5px 0 var(--secondary);
+	}
+
+	.hero-links {
+		padding-top: 4px;
+	}
+
+	.hero-links a {
+		font-size: 1.05em;
+		background: var(--primary);
+	}
+
+	.hero-links a:hover {
+		background: var(--alert);
+		color: var(--secondary);
+	}
+
 	.badge {
 		position: absolute;
 		top: -14px;
@@ -308,6 +309,15 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 		font-size: 1rem;
 		font-weight: 700;
 		padding: 2px 8px;
+	}
+
+	.next {
+		background: var(--accent);
+	}
+
+	.soon {
+		padding: 0 0 8px;
+		letter-spacing: 0.1em;
 	}
 
 	.meta {
@@ -334,40 +344,6 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 		padding-bottom: 12px;
 	}
 
-	.rows {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-		margin-bottom: 10px;
-	}
-
-	/* list rows are full width, so the shared a:hover scale would make them overlap */
-	.row {
-		display: flex;
-		gap: 12px;
-		align-items: baseline;
-		margin: 0;
-		padding: 7px 10px;
-		border: 2px solid var(--secondary);
-		background: var(--paper);
-	}
-
-	.row.stacked {
-		flex-direction: column;
-		gap: 0;
-		line-height: 1.4;
-	}
-
-	a.row:hover {
-		transform: none;
-		background: var(--primary);
-		color: var(--secondary);
-	}
-
-	.tight .row {
-		font-size: 0.95em;
-	}
-
 	summary {
 		font-size: 1rem;
 		font-weight: 700;
@@ -386,23 +362,6 @@ const spotifyOf = (r: (typeof releases)[number]) => spotifyEmbed(r.data.spotify)
 
 	details[open] summary {
 		margin-bottom: 10px;
-	}
-
-	iframe {
-		border: 0;
-		width: 100%;
-		display: block;
-		margin-bottom: 6px;
-	}
-
-	/* keeps youtube 16:9 without javascript */
-	.video-frame {
-		aspect-ratio: 16 / 9;
-		margin-bottom: 10px;
-	}
-
-	.video-frame iframe {
-		height: 100%;
 	}
 
 	.about p {

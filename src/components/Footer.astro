@@ -1,0 +1,33 @@
+---
+// The bottom-of-page furniture: visit counter, credit.
+---
+
+<footer>
+	<p class="mono counter">
+		{/* the count is filled in per browser — see the script in Layout.astro */}
+		YOU HAVE BEEN HERE <span data-visits>000001</span> TIME(S)
+	</p>
+	<p>website by aaron abebe</p>
+</footer>
+
+<style>
+	footer {
+		font-size: 0.85em;
+		text-align: center;
+		margin-bottom: 30px;
+		padding: 10px;
+		background: var(--tertiary);
+		border: 3px solid var(--secondary);
+	}
+
+	.counter {
+		font-size: 1.1em;
+		letter-spacing: 0.08em;
+	}
+
+	.counter span {
+		background: var(--secondary);
+		color: var(--accent);
+		padding: 2px 6px;
+	}
+</style>

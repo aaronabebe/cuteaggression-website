@@ -5,4 +5,10 @@
 #   date: 2026-01-31
 #   title: "Charli's Butt (official video)"
 #   youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-[]
+
+# FIXME: YouTube doesn't expose the upload date, so this is the single's release
+# date. It only controls sort order — fix it if the video came out later.
+- id: agents-of-love-video
+  date: 2025-06-28
+  title: "Agents Of Love (official music video)"
+  youtube: https://www.youtube.com/watch?v=BCXjX2Q_ZMM

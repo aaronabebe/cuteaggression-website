@@ -4,7 +4,7 @@
 #
 #   - id: 2026-01-31-some-venue      <- must be unique. date + short name works.
 #     date: 2026-01-31               <- YYYY-MM-DD, used for sorting
-#     kind: concert                  <- concert | single | album | video
+#     kind: concert                  <- concert | single | album | video | press | charts | award
 #     title: "venue, whatever else"
 #     links:
 #       - text: "click me baby"
@@ -13,6 +13,19 @@
 # Optional: dateLabel: "a long long time ago"  -> shown instead of the date.
 # Optional: leave out `links:` entirely if there is nothing to link to.
 
+- id: 2026-11-12-chelsea
+  date: 2026-11-12
+  kind: concert
+  title: "Chelsea Wien, with Ikan Hyu"
+
+- id: 2026-10-01-waves-vienna
+  date: 2026-10-01
+  kind: concert
+  title: "Waves Vienna Festival"
+  links:
+    - text: "festival"
+      url: https://www.wavesvienna.com
+
 - id: 2026-08-04-charts
   date: 2026-08-04
   kind: charts
@@ -20,6 +33,14 @@
   links:
     - text: "listen listen"
       url: https://open.spotify.com/album/3Whe5H1Wpm6Z46U2DEPgP8
+
+- id: 2026-07-15-xa-award-nomination
+  date: 2026-07-15
+  kind: award
+  title: "nominated for the XA Award 2026 — ceremony at Waves Vienna, 03.10."
+  links:
+    - text: "the nominees"
+      url: https://www.musicexport.at/waves-vienna-2026-xa-award-nominees-announced/
 
 - id: 2026-07-10-talking-about-music-remix
   date: 2026-07-10
