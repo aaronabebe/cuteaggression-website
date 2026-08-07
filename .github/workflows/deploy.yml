@@ -32,11 +32,21 @@ jobs:
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
+          # the vhost directory, NOT html/ — that one is the default docroot for the
+          # uberspace host itself and holds the other sites' neighbour. the apex
+          # domain cuteaggression.lol is a symlink to this directory.
+          DEPLOY_DIR: www.cuteaggression.lol
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+          target="/var/www/virtual/$SSH_USER/$DEPLOY_DIR"
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$SSH_USER@$SSH_HOST" \
+            "test -d '$target'" \
+            || { echo "::error::$target does not exist on the server — refusing to rsync --delete into the wrong place"; exit 1; }
+
           rsync -rlvz --delete \
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
-            dist/ "$SSH_USER@$SSH_HOST:/var/www/virtual/$SSH_USER/html/"
+            dist/ "$SSH_USER@$SSH_HOST:$target/"
