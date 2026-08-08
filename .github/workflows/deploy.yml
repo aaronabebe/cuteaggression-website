@@ -15,38 +15,34 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+      # The embed url parsing is the only logic worth gating a deploy on, and it
+      # imports nothing — node runs the .ts file directly, so no install step here.
+      # Everything else (install, astro check, build) happens on the server below.
       - run: node src/lib/embed.test.ts
-      - run: pnpm run build
 
-      - name: rsync dist to uberspace
+      - name: trigger server-side deploy
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
-          # the vhost directory, NOT html/ — that one is the default docroot for the
-          # uberspace host itself and holds the other sites' neighbour. the apex
-          # domain cuteaggression.lol is a symlink to this directory.
-          DEPLOY_DIR: www.cuteaggression.lol
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
 
-          target="/var/www/virtual/$SSH_USER/$DEPLOY_DIR"
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$SSH_USER@$SSH_HOST" \
-            "test -d '$target'" \
-            || { echo "::error::$target does not exist on the server — refusing to rsync --delete into the wrong place"; exit 1; }
-
-          rsync -rlvz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
-            dist/ "$SSH_USER@$SSH_HOST:$target/"
+          # The server pulls this very commit from GitHub and builds it there — only
+          # the command string travels over ssh. Pushing built files up from a runner
+          # is what the old rsync step did, and that transfer stalls.
+          #
+          # The remote login shell is fish, so this is a plain && chain: no `set -e`
+          # (that erases a variable in fish) and no { } grouping (bash-only). Any
+          # failing step breaks the chain, so a bad build never reaches the rsync.
+          #
+          # -n keeps stdin off the remote shell so it can never sit waiting for input.
+          ssh -n -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$SSH_USER@$SSH_HOST" 'cd /home/aaronabb/websites/cuteaggression-website && echo ":: 1/4 pull" && git pull --ff-only origin main && echo ":: 2/4 install" && npm install && echo ":: 3/4 build" && npm run build && echo ":: 4/4 publish" && test -d /var/www/virtual/aaronabb/www.cuteaggression.lol && rsync -av --delete dist/ /var/www/virtual/aaronabb/www.cuteaggression.lol/ && echo ":: deployed"'
