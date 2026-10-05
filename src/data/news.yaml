@@ -18,6 +18,22 @@
   kind: concert
   title: "Chelsea Wien, with Ikan Hyu"
 
+- id: 2026-10-10-brenner-o-in-stere-o
+  date: 2026-10-10
+  kind: concert
+  title: "Brenner:o in Stere:o #2 Showcase Festival, BASIS Schlanders"
+  links:
+    - text: "festival"
+      url: https://basis-space.odoo.com/en_GB/event/brenner-o-in-stere-o-2-music-conference-showcase-festival-759/register
+
+- id: 2026-10-02-all-your-faces-video
+  date: 2026-10-02
+  kind: video
+  title: "All Your Faces, the music video is out"
+  links:
+    - text: "watch watch"
+      url: https://youtu.be/Wj_k4txNGlY
+
 - id: 2026-10-01-waves-vienna
   date: 2026-10-01
   kind: concert
@@ -25,6 +41,14 @@
   links:
     - text: "festival"
       url: https://www.wavesvienna.com
+
+- id: 2026-09-12-tanz-oder-garten
+  date: 2026-09-12
+  kind: concert
+  title: "Tanz oder Garten Festival"
+  links:
+    - text: "look look"
+      url: https://www.instagram.com/p/DcYLF6RDWRW/?img_index=1
 
 - id: 2026-08-04-charts
   date: 2026-08-04

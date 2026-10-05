@@ -6,6 +6,11 @@
 #   title: "Charli's Butt (official video)"
 #   youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
+- id: all-your-faces-video
+  date: 2026-10-02
+  title: "All Your Faces (official music video)"
+  youtube: https://youtu.be/Wj_k4txNGlY
+
 # FIXME: YouTube doesn't expose the upload date, so this is the single's release
 # date. It only controls sort order — fix it if the video came out later.
 - id: agents-of-love-video
