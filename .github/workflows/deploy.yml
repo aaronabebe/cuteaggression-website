@@ -18,6 +18,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+          # v5 auto-caches for the `packageManager` in package.json (pnpm), which
+          # isn't installed here — and nothing gets installed on the runner anyway.
+          package-manager-cache: false
 
       # The embed url parsing is the only logic worth gating a deploy on, and it
       # imports nothing — node runs the .ts file directly, so no install step here.
