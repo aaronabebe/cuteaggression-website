@@ -43,7 +43,7 @@ const press = news.filter((n) => n.data.kind === 'press');
 
 // the ticker leads with the two things worth shouting about, then whatever is newest
 const shouted = [charts, award].filter((n) => n !== undefined);
-const ticker = [...shouted, ...news.filter((n) => !shouted.includes(n))].slice(0, 6);
+const ticker = [...shouted, ...news.filter((n) => !shouted.includes(n))].slice(0, 4);
 
 // gigs that haven't happened yet belong at the top, soonest first — everything
 // else is history. `date` is midnight, so compare against midnight today.
